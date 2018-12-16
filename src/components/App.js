@@ -5,16 +5,16 @@ import Home from './Home'
 class App extends Component {
 
   constructor() {
+    super()
     this.state = {
-      homeDragons: [],
-      warDragons: []
+      allDragons: []
     }
   }
 
   componentDidMount() {
     fetch('http://localhost:3001/dragons')
       .then(resp => resp.json())
-      .then(data => this.dragonSort(data))
+      .then(data => this.setState({ allDragons: data }))
     }
     
   dragonSort = (array) => {
@@ -33,34 +33,29 @@ class App extends Component {
     })
   }
     
-  findDragonById = (id, array) => {
-    return array.find((item) => item.id == id)
+  findDragonIndexById = (id) => {
+    return this.state.allDragons.findIndex((item) => item.id === id)
   }
 
-  warToggle = (id, atWar) => {
-    let dragonArray;
-    let otherArray;
-    
-    if (atWar) {
-      dragonArray = this.state.warDragons
-      otherArray = this.state.homeDragons
-    } else {
-      dragonArray = this.state.homeDragons
-      otherArray = this.state.warDragons
-    }
-    dragon = this.findDragonById(id, dragonArray)
-
-    const deleteIndex = dragonArray.findIndex(dragon)
-
-    dragonArray.splice(deleteIndex,1)
-    otherArray.push(dragon)
+  warToggle = (id) => {
+    const dragonIndex= this.findDragonIndexById(id)
+    this.setState(state => {
+      const array = state.allDragons.map((dragon, index) => {
+        if (index === dragonIndex) {
+          return dragon.atWar = !dragon.atWar
+        } else {
+          return dragon
+        }
+      })
+      return {array}
+    })
   }
 
   render() {
     return (
       <div>
-        <Home dragons = {this.state.homeDragons} goToWar = {this.warToggle} />
-        <War dragons={this.state.warDragons} goToWar={this.warToggle} />
+        <Home dragons = { this.state.allDragons.filter(dragon => !dragon.atWar) } goToWar = {this.warToggle} />
+        <War dragons={this.state.allDragons.filter(dragon => dragon.atWar)  } goToHome={this.warToggle} />
       </div>
     );
   }
