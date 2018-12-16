@@ -36,19 +36,35 @@ class App extends Component {
   findDragonIndexById = (id) => {
     return this.state.allDragons.findIndex((item) => item.id === id)
   }
+  findDragonById = (id) => {
+    return this.state.allDragons.find((item) => item.id === id)
+  }
 
   warToggle = (id) => {
-    const dragonIndex= this.findDragonIndexById(id)
+  
     this.setState(state => {
+      const dragonIndex= this.findDragonIndexById(id)
       const array = state.allDragons.map((dragon, index) => {
         if (index === dragonIndex) {
-          return dragon.atWar = !dragon.atWar
+          dragon.atWar = !dragon.atWar
+          this.saveDragon(dragon)
+          return dragon
         } else {
           return dragon
         }
       })
       return {array}
     })
+  }
+
+  saveDragon = (dragon) => {
+    fetch(`http://localhost:3001/dragons/${dragon.id}`,{
+      method: 'PATCH',
+      headers: {
+        'Content-Type':'application/json'
+      },
+      body: {dragon}
+    } )
   }
 
   render() {
