@@ -61,9 +61,9 @@ class App extends Component {
     fetch(`http://localhost:3001/dragons/${dragon.id}`,{
       method: 'PATCH',
       headers: {
-        'Content-Type':'application/json'
+        'Content-Type': 'application/json'
       },
-      body: {dragon}
+      body: JSON.stringify(dragon)
     } )
   }
 
